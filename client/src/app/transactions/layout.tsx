@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
-import NavBar from "@/components/Navbar";
+import dynamic from "next/dynamic";
 import GoBack from "@/components/GoBack";
+import Loader from "@/components/Loader";
+const NavBar = dynamic(() => import("@/components/Navbar"), {
+  loading: () => <Loader />,
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: "Transactions | page",

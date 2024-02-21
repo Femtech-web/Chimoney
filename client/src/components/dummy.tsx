@@ -6,7 +6,7 @@ export const transactions = [
     amount: "$10.56",
     initiator: "oluwafemi akolade",
     bank: "uba",
-    acctNo: "",
+    acctNo: "3423566784",
     desc: "this is a test",
   },
   {
@@ -16,7 +16,7 @@ export const transactions = [
     amount: "$10.56",
     initiator: "oluwafemi akolade",
     bank: "uba",
-    acctNo: "",
+    acctNo: "3423566784",
     desc: "this is a test",
   },
   {
@@ -26,7 +26,7 @@ export const transactions = [
     amount: "$10.56",
     initiator: "oluwafemi akolade",
     bank: "uba",
-    acctNo: "",
+    acctNo: "3423566784",
     desc: "this is a test",
   },
 ];

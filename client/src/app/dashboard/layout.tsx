@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import Dashboard from "./page";
+import dynamic from "next/dynamic";
+import Loader from "@/components/Loader";
+const Dashboard = dynamic(() => import("./page"), {
+  loading: () => <Loader />,
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: "Chipay | Dashboard",

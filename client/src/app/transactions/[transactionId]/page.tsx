@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Box, Paper, styled, Divider } from "@mui/material";
 import { usePathname } from "next/navigation";
+import { transactions } from "@/components/dummy";
+import Loader from "@/components/Loader";
 
 interface TransactionProps {
   id: number;
@@ -15,7 +17,13 @@ interface TransactionProps {
   desc: string;
 }
 
-const Bar = ({ header, subtext }: { header: string; subtext: string }) => {
+const Bar = ({
+  header,
+  subtext,
+}: {
+  header: string;
+  subtext: string | undefined;
+}) => {
   return (
     <CustomBox>
       <h3>{header}</h3>
@@ -24,33 +32,40 @@ const Bar = ({ header, subtext }: { header: string; subtext: string }) => {
   );
 };
 
-const TransactionPage = ({
-  id,
-  date,
-  type,
-  amount,
-  initiator,
-  bank,
-  acctNo,
-  desc,
-}: TransactionProps) => {
+const TransactionPage = () => {
   const pathName = usePathname();
-  const transactionId = pathName.split("/")[2];
+  const transactionId = parseInt(pathName.split("/")[2]);
+  const [transaction, setTransaction] = useState<TransactionProps | undefined>(
+    undefined
+  );
   console.log(transactionId);
+
+  useEffect(() => {
+    function fetchTarget() {
+      const foundItem = transactions.find((item) => item.id === transactionId);
+
+      return foundItem;
+    }
+
+    const res = fetchTarget();
+    setTransaction(res);
+  }, [transactionId]);
+
+  if (transaction === null) return <Loader />;
 
   return (
     <Wrapper maxWidth="sm">
       <h2>Transaction details</h2>
       <CustomPaper elevation={3}>
-        <Bar header="Transaction Date" subtext={date} />
+        <Bar header="Transaction Date" subtext={transaction?.date} />
         <Divider />
-        <Bar header="Transaction Type" subtext={type} />
+        <Bar header="Transaction Type" subtext={transaction?.type} />
         <Divider />
-        <Bar header="Account Number" subtext={acctNo} />
+        <Bar header="Account Number" subtext={transaction?.acctNo} />
         <Divider />
-        <Bar header="Amount" subtext={amount} />
+        <Bar header="Amount" subtext={transaction?.amount} />
         <Divider />
-        <Bar header="Narration" subtext={desc} />
+        <Bar header="Narration" subtext={transaction?.desc} />
         <Divider />
       </CustomPaper>
     </Wrapper>
@@ -59,7 +74,7 @@ const TransactionPage = ({
 
 export default TransactionPage;
 
-const Wrapper = styled(Container)`
+export const Wrapper = styled(Container)`
   h2 {
     font-weight: 400;
     font-style: normal;
@@ -68,14 +83,15 @@ const Wrapper = styled(Container)`
     text-align: center;
   }
 `;
-const CustomPaper = styled(Paper)`
+
+export const CustomPaper = styled(Paper)`
   min-width: 300px;
   min-height: 250px;
   padding: 1rem;
   border-radius: 5px;
 `;
 
-const CustomBox = styled(Box)`
+export const CustomBox = styled(Box)`
   width: 100%;
   padding: 1rem 1.5rem;
   display: flex;
@@ -89,7 +105,7 @@ const CustomBox = styled(Box)`
   }
 
   p {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 400;
     color: slategray;
   }
