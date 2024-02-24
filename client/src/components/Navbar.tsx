@@ -14,9 +14,12 @@ import {
   ListItemText,
   styled,
 } from "@mui/material";
+// import { useOutsideClick } from "@/hooks/outside.click";
+import { useAppContext } from "@/context";
 
 const Navbar = () => {
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { handleSignout } = useAppContext();
+  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
 
   const lists = [
     {
@@ -29,9 +32,13 @@ const Navbar = () => {
     },
   ];
 
-  const handleClose = () => {
-    setIsProfileOpen((prev) => !prev);
-    console.log(isProfileOpen);
+  const handleClose = () => setIsProfileOpen((prev) => !prev);
+  const handleOutside = () => setIsProfileOpen(false);
+  // const ref = useOutsideClick(handleOutside);
+
+  const handleLogout = () => {
+    setIsProfileOpen(false);
+    handleSignout();
   };
 
   return (
@@ -72,7 +79,7 @@ const Navbar = () => {
               </ListItem>
             ))}
             <Divider />
-            <ListItem disablePadding onClick={() => setIsProfileOpen(false)}>
+            <ListItem disablePadding onClick={handleLogout}>
               <ListItemButton component="a" href="#">
                 <ListItemText primary="Sign out" />
               </ListItemButton>
@@ -86,6 +93,7 @@ const Navbar = () => {
 
 export default Navbar;
 
+/* --------------------------- styles ---------------------------- */
 const CustomBox = styled(Box)`
   display: flex;
   justify-content: space-between;
@@ -124,3 +132,5 @@ const NavBox = styled(Paper)`
   padding: 1rem;
   border-radius: 5px;
 `;
+
+/* --------------------------- styles ---------------------------- */

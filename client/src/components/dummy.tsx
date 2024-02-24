@@ -30,3 +30,10 @@ export const transactions = [
     desc: "this is a test",
   },
 ];
+
+export const signupRequiredFields = [
+  "full_name",
+  "email",
+  "password",
+  "confirm_password",
+];

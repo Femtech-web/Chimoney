@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import Loader from "@/components/Loader";
+import Loader from "@/helpers/Loader";
+import { ProtectedRoute } from "@/helpers/RouteProtection";
 const Dashboard = dynamic(() => import("./page"), {
   loading: () => <Loader />,
   ssr: false,
@@ -13,9 +14,11 @@ export const metadata: Metadata = {
 
 const DashboardLayout = () => {
   return (
-    <main>
-      <Dashboard />
-    </main>
+    <ProtectedRoute>
+      <main>
+        <Dashboard />
+      </main>
+    </ProtectedRoute>
   );
 };
 

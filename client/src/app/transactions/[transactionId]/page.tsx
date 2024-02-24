@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Box, Paper, styled, Divider } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { transactions } from "@/components/dummy";
-import Loader from "@/components/Loader";
+import Loader from "@/helpers/Loader";
 
 interface TransactionProps {
   id: number;

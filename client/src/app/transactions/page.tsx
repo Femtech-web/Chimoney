@@ -15,7 +15,7 @@ import {
 import { transactions } from "@/components/dummy";
 import { List } from "@/components/Transactions";
 import Transaction from "@/components/Transaction";
-import { CustomBox as LoaderBox } from "@/components/Loader";
+import { CustomBox as LoaderBox } from "@/helpers/Loader";
 
 const TransactionsPage = () => {
   const [rangeSelector, setRangeSelector] = useState<boolean>(false);

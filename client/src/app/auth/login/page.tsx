@@ -1,28 +1,85 @@
 "use client";
 
 import React from "react";
+import { useAppContext } from "@/context";
 import { CustomButton } from "../../page";
 import { CustomContainer } from "../signup/page";
-import { Box, Stack, TextField } from "@mui/material";
+import { PublicRoute } from "@/helpers/RouteProtection";
+import {
+  Box,
+  Stack,
+  TextField,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 const LoginPage = () => {
+  const {
+    signinForm,
+    setSigninForm,
+    handleChange,
+    showPassword,
+    handleSignin,
+    handleClickShowPassword,
+    handleMouseDownPassword,
+  } = useAppContext();
+
   return (
-    <CustomContainer maxWidth="sm">
-      <Box sx={{ width: "100%", textAlign: "center" }}>
-        <h2>Login to Chipay</h2>
-        <Stack spacing={3} mx={3}>
-          <TextField label="Email" variant="outlined" />
-          <TextField label="Password" variant="outlined" />
-          <CustomButton fullWidth variant="contained" color="secondary">
-            Login
-          </CustomButton>
-        </Stack>
-        <div className="btm_text">
-          <span>New to chipay?</span>
-          <a href="/auth/signup">create an account</a>
-        </div>
-      </Box>
-    </CustomContainer>
+    <PublicRoute>
+      <CustomContainer maxWidth="sm">
+        <Box sx={{ width: "100%", textAlign: "center" }}>
+          <h2>Login to Chipay</h2>
+          <Stack spacing={3} mx={3}>
+            <TextField
+              label="Email"
+              name="email"
+              variant="outlined"
+              type="email"
+              value={signinForm.email}
+              onChange={(e) => handleChange(e, setSigninForm)}
+            />
+            <FormControl variant="outlined">
+              <InputLabel>Password</InputLabel>
+              <OutlinedInput
+                name="password"
+                value={signinForm.password}
+                onChange={(e) => handleChange(e, setSigninForm)}
+                type={showPassword ? "text" : "password"}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
+            <CustomButton
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={handleSignin}
+            >
+              Login
+            </CustomButton>
+          </Stack>
+          <div className="btm_text">
+            <span>New to chipay?</span>
+            <a href="/auth/signup">create an account</a>
+          </div>
+        </Box>
+      </CustomContainer>
+    </PublicRoute>
   );
 };
 
