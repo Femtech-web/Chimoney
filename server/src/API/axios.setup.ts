@@ -13,4 +13,4 @@ const CHIPAY_API = axios.create({
 
 })
 
-export { CHIPAY_API };
+export default CHIPAY_API;

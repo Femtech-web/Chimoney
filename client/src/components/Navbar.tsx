@@ -14,7 +14,7 @@ import {
   ListItemText,
   styled,
 } from "@mui/material";
-// import { useOutsideClick } from "@/hooks/outside.click";
+import { useOutsideClick } from "@/hooks/outside.click";
 import { useAppContext } from "@/context";
 
 const Navbar = () => {
@@ -34,7 +34,7 @@ const Navbar = () => {
 
   const handleClose = () => setIsProfileOpen((prev) => !prev);
   const handleOutside = () => setIsProfileOpen(false);
-  // const ref = useOutsideClick(handleOutside);
+  const ref = useOutsideClick(handleOutside);
 
   const handleLogout = () => {
     setIsProfileOpen(false);
@@ -42,7 +42,7 @@ const Navbar = () => {
   };
 
   return (
-    <CustomBox component="section">
+    <CustomBox component="section" ref={ref}>
       <div className="logo_container">
         <Link href="/dashboard">
           <Image

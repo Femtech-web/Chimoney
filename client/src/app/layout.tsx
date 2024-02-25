@@ -4,7 +4,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import { AppProvider } from "@/context";
 import AlertBox from "@/helpers/AlertBox";
-import theme from "../configs/theme";
+import theme from "@/configs/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -30,14 +30,14 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <AppProvider>
-          <AppRouterCacheProvider>
-            <ThemeProvider theme={theme}>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={theme}>
+            <AppProvider>
               <AlertBox />
               {children}
-            </ThemeProvider>
-          </AppRouterCacheProvider>
-        </AppProvider>
+            </AppProvider>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

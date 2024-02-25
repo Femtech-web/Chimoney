@@ -178,14 +178,14 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   };
 
   // ---------- state observer ----------
-  onAuthStateChanged(auth, function (User) {
-    if (User) {
-      const newUser = formatUser(User);
-      setUser(newUser);
-    } else {
-      setUser(null);
-    }
-  });
+  // onAuthStateChanged(auth, function (User) {
+  //   if (User) {
+  //     const newUser = formatUser(User);
+  //     setUser(newUser);
+  //   } else {
+  //     setUser(null);
+  //   }
+  // });
 
   // ------------- handleSignin -----------
   const handleSignin = async () => {
@@ -236,6 +236,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const handleSignout = () => {
     if (auth.currentUser) {
       signOut(auth);
+      setUser(null);
       localStorage.removeItem("chipay-user-active");
       localStorage.removeItem("chipay-user");
       router.push("/auth/login");

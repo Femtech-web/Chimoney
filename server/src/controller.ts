@@ -1,6 +1,9 @@
 import { Response, Request, NextFunction } from "express";
 import { PrismaClient } from '@prisma/client';
 import AppError from './helpers/appError';
+import { SubAcctRequestBody } from './typings/types';
+import { CREATE_SUBACCOUNT_API } from "./API/api.calls";
+import { emailValidator } from "./utils/email.validator";
 
 const prisma = new PrismaClient();
 
@@ -9,7 +12,26 @@ class Controller {
     res.send("Hello there!");
   }
 
-  static async createUserWallet(req: Request, res: Response) {
+  static async createUserWallet(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user_data: SubAcctRequestBody = req.body;
+
+      if (!user_data.name || !user_data.email) {
+        return next(new AppError(`No credentials provided`, 400));
+      }
+
+      const isValidEmail = emailValidator(user_data.email);
+      if (!isValidEmail) {
+        return next(new AppError(`Email is not valid`, 400));
+      }
+
+      const response = await CREATE_SUBACCOUNT_API(user_data);
+      console.log(response)
+
+      console.log(req.body)
+    } catch (err) {
+      next(err);
+    }
 
   }
 }
