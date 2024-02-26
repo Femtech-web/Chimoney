@@ -1,15 +1,28 @@
 import { Response, Request, NextFunction } from "express";
 import { PrismaClient } from '@prisma/client';
 import AppError from './helpers/appError';
-import { SubAcctRequestBody } from './typings/types';
-import { CREATE_SUBACCOUNT_API } from "./API/api.calls";
 import { emailValidator } from "./utils/email.validator";
+import { formatSubAccount } from "./utils/format.subAccount";
+import {
+  SubAcctRequestBody,
+  PayoutWalletReqBody,
+  PayoutChimoneyReqBody
+} from './typings/types';
+import {
+  CREATE_SUBACCOUNT_API,
+  GET_SUBACCOUNT_API,
+  PAYOUT_CHIMONEY_API,
+  PAYOUT_WALLET_API
+} from "./API/api.calls";
+import { formatPayout } from "./utils/format.payout";
 
 const prisma = new PrismaClient();
+// id: 58329172-5e3e-48f9-95ef-19ef2cb194fb
+// id: 434396c3-ac55-4c66-bd10-144ab5555500
 
 class Controller {
-  static async SendHello(req: Request, res: Response) {
-    res.send("Hello there!");
+  static async SendHealth(req: Request, res: Response) {
+    res.status(200).json({ message: 'Everything is good!' });
   }
 
   static async createUserWallet(req: Request, res: Response, next: NextFunction) {
@@ -25,204 +38,117 @@ class Controller {
         return next(new AppError(`Email is not valid`, 400));
       }
 
-      const response = await CREATE_SUBACCOUNT_API(user_data);
-      console.log(response)
+      const { data, status } = await CREATE_SUBACCOUNT_API(user_data);
+      if (data && status === "success") {
+        const created_account = formatSubAccount(data, "initial");
 
-      console.log(req.body)
-    } catch (err) {
+        const response = await GET_SUBACCOUNT_API(created_account.account_id);
+        if (response.data && response.status === "success") {
+          const user_account = formatSubAccount(response.data, "wallet");
+
+          return res.status(200).json({
+            success: true,
+            message: `New account has been created!`,
+            created_account,
+            data: user_account,
+          })
+        }
+      }
+    } catch (err: any) {
+      const serverError = err.response.data.error;
+      if (serverError === "already exists") {
+        return next(new AppError("Account already exists", 500));
+      }
+
       next(err);
     }
+  }
 
+  static async fetchWallet(req: Request, res: Response, next: NextFunction) {
+    try {
+      const account_id = req.query.id?.toLocaleString();
+      if (!account_id) {
+        return next(new AppError(`No request query provided`, 400));
+      }
+
+      const { data, status } = await GET_SUBACCOUNT_API(account_id);
+      if (data && status === "success") {
+        const user_account = formatSubAccount(data, "wallet");
+
+        return res.status(200).json({
+          success: true,
+          message: `User account fetched successfully!`,
+          data: user_account,
+        })
+      }
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  static async payNormal(body_params: PayoutChimoneyReqBody, next: NextFunction) {
+
+    try {
+
+      if (!Array.isArray(body_params.chimoneys) || body_params.chimoneys.length === 0) {
+        return next(new AppError(`No receivers provided`, 400));
+      }
+
+      const allEmails = body_params.chimoneys.map(receiver => {
+        if ('email' in receiver) {
+          return receiver.email;
+        }
+      });
+
+      allEmails.forEach((email) => {
+        const isValidEmail = emailValidator(email);
+        if (!isValidEmail) {
+          return next(new AppError(`Email is not valid`, 400));
+        }
+      })
+
+      const { data, status } = await PAYOUT_CHIMONEY_API(body_params);
+      if (data && status === "success") {
+        return formatPayout(data);;
+      }
+
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async payoutChimoney(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = req.query.type;
+      const body_params = req.body;
+      let payment_response;
+
+      if (query === "wallet") {
+        const body_params: PayoutWalletReqBody = req.body;
+
+        if (!body_params.subAccount || !("wallets" in body_params)) {
+          return next(new AppError(`No parameters provided`, 400));
+        }
+
+        const { data, status } = await PAYOUT_WALLET_API(body_params as PayoutWalletReqBody);
+        if (data && status === "success") {
+          console.log(data, status);
+          payment_response = formatPayout(data);
+        }
+      } else {
+        const response = await Controller.payNormal(body_params, next);
+        payment_response = response;
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Payout successful!`,
+        data: payment_response,
+      })
+    } catch (err: any) {
+      next(err);
+    }
   }
 }
 
 export default Controller;
-
-// {
-//   "status": "success",
-//   "data": {
-//     "id": "434396c3-ac55-4c66-bd10-144ab5555500",
-//     "parent": "OsdmSLaIU0TyNdPrN6xUS03tbEt2",
-//     "uid": "434396c3-ac55-4c66-bd10-144ab5555500",
-//     "approved": true,
-//     "createdDate": "2024-02-24T15:40:55.392Z",
-//     "meta": {},
-//     "approvals": [
-//       {
-//         "changedFields": [
-//           "all"
-//         ],
-//         "deviceTime": "2/24/2024",
-//         "timestamp": "2024-02-24T15:40:55.392Z"
-//       }
-//     ],
-//     "name": "femi",
-//     "verified": true,
-//     "isScrimUser": false,
-//     "subAccount": true
-//   }
-// }
-
-// {
-//   "status": "success",
-//   "data": {
-//     "id": "434396c3-ac55-4c66-bd10-144ab5555500",
-//     "parent": "OsdmSLaIU0TyNdPrN6xUS03tbEt2",
-//     "uid": "434396c3-ac55-4c66-bd10-144ab5555500",
-//     "approved": true,
-//     "createdDate": "2024-02-24T15:40:55.392Z",
-//     "meta": {},
-//     "name": "femi",
-//     "verified": true,
-//     "isScrimUser": false,
-//     "subAccount": true,
-//     "wallets": [
-//       {
-//         "id": "0G9vDglax5FmAs4WUkL5",
-//         "owner": "434396c3-ac55-4c66-bd10-144ab5555500",
-//         "balance": 1000,
-//         "type": "airtime",
-//         "transactions": [
-//           {
-//             "amount": 0,
-//             "balanceBefore": 1000,
-//             "meta": {
-//               "date": {
-//                 "_seconds": 1708789256,
-//                 "_nanoseconds": 76000000
-//               }
-//             },
-//             "newBalance": 1000,
-//             "description": "new wallet creation transaction"
-//           }
-//         ]
-//       },
-//       {
-//         "id": "9gQXScGNkHCYBNNAIQxx",
-//         "owner": "434396c3-ac55-4c66-bd10-144ab5555500",
-//         "balance": 1000,
-//         "type": "chi",
-//         "transactions": [
-//           {
-//             "amount": 0,
-//             "balanceBefore": 1000,
-//             "meta": {
-//               "date": {
-//                 "_seconds": 1708789255,
-//                 "_nanoseconds": 392000000
-//               }
-//             },
-//             "newBalance": 1000,
-//             "description": "new wallet creation transaction"
-//           }
-//         ]
-//       },
-//       {
-//         "id": "MlZ32RB8vzXlw67h2Syj",
-//         "owner": "434396c3-ac55-4c66-bd10-144ab5555500",
-//         "balance": 1000,
-//         "type": "momo",
-//         "transactions": [
-//           {
-//             "amount": 0,
-//             "balanceBefore": 1000,
-//             "meta": {
-//               "date": {
-//                 "_seconds": 1708789255,
-//                 "_nanoseconds": 744000000
-//               }
-//             },
-//             "newBalance": 1000,
-//             "description": "new wallet creation transaction"
-//           }
-//         ]
-//       }
-//     ]
-//   }
-// }
-
-// {
-//   "status": "success",
-//   "data": {
-//     "paymentLink": "https://sandbox.chimoney.io/pay/?issueID=434396c3-ac55-4c66-bd10-144ab5555500_10_1708790189633",
-//     "data": [
-//       {
-//         "id": "UNWixMy33UbmQSxFqtMG",
-//         "valueInUSD": 10,
-//         "chimoney": 10000,
-//         "issueID": "434396c3-ac55-4c66-bd10-144ab5555500_10_1708790189633",
-//         "fee": 0,
-//         "type": "chimoney",
-//         "issuer": "434396c3-ac55-4c66-bd10-144ab5555500",
-//         "initiatorKey": "U2FsdGVkX18F5U/94WyNXP9SvkZD8pkxSctOP2yMuSuw/YccZ4bhQ7u3opU3TRGpf8pCaByMKmd0zprPS0udeoJMNvbtp/HluTx1JaFADQ5j3NFvWH+NaslWYkRSwhGQ",
-//         "chiRef": "8fa02292-fecd-4e0f-b1fb-88d3c5a276cb",
-//         "integration": {
-//           "appID": "aPDbsZzZQbrDynvW9RyS"
-//         },
-//         "issueDate": "2024-02-24T15:56:29.906Z",
-//         "redeemData": {},
-//         "initiatedBy": "OsdmSLaIU0TyNdPrN6xUS03tbEt2",
-//         "meta": {
-//           "payer": "434396c3-ac55-4c66-bd10-144ab5555500"
-//         },
-//         "updatedDate": "2024-02-24T15:56:31.417Z",
-//         "paymentDate": "2024-02-24T15:56:31.417Z",
-//         "enabledToRedeem": [],
-//         "redeemLink": "https://sandbox.chimoney.io/redeem/?chi=8fa02292-fecd-4e0f-b1fb-88d3c5a276cb"
-//       }
-//     ],
-//     "chimoneys": [
-//       {
-//         "id": "UNWixMy33UbmQSxFqtMG",
-//         "valueInUSD": 10,
-//         "chimoney": 10000,
-//         "issueID": "434396c3-ac55-4c66-bd10-144ab5555500_10_1708790189633",
-//         "fee": 0,
-//         "type": "chimoney",
-//         "issuer": "434396c3-ac55-4c66-bd10-144ab5555500",
-//         "initiatorKey": "U2FsdGVkX18F5U/94WyNXP9SvkZD8pkxSctOP2yMuSuw/YccZ4bhQ7u3opU3TRGpf8pCaByMKmd0zprPS0udeoJMNvbtp/HluTx1JaFADQ5j3NFvWH+NaslWYkRSwhGQ",
-//         "chiRef": "8fa02292-fecd-4e0f-b1fb-88d3c5a276cb",
-//         "integration": {
-//           "appID": "aPDbsZzZQbrDynvW9RyS"
-//         },
-//         "issueDate": "2024-02-24T15:56:29.906Z",
-//         "redeemData": {},
-//         "initiatedBy": "OsdmSLaIU0TyNdPrN6xUS03tbEt2",
-//         "meta": {
-//           "payer": "434396c3-ac55-4c66-bd10-144ab5555500"
-//         },
-//         "updatedDate": "2024-02-24T15:56:31.417Z",
-//         "paymentDate": "2024-02-24T15:56:31.417Z",
-//         "enabledToRedeem": [],
-//         "redeemLink": "https://sandbox.chimoney.io/redeem/?chi=8fa02292-fecd-4e0f-b1fb-88d3c5a276cb"
-//       }
-//     ],
-//     "error": "None",
-//     "payouts": {
-//       "0": {
-//         "id": "UNWixMy33UbmQSxFqtMG",
-//         "valueInUSD": 10,
-//         "chimoney": 10000,
-//         "issueID": "434396c3-ac55-4c66-bd10-144ab5555500_10_1708790189633",
-//         "fee": 0,
-//         "type": "chimoney",
-//         "issuer": "434396c3-ac55-4c66-bd10-144ab5555500",
-//         "initiatorKey": "U2FsdGVkX18F5U/94WyNXP9SvkZD8pkxSctOP2yMuSuw/YccZ4bhQ7u3opU3TRGpf8pCaByMKmd0zprPS0udeoJMNvbtp/HluTx1JaFADQ5j3NFvWH+NaslWYkRSwhGQ",
-//         "chiRef": "8fa02292-fecd-4e0f-b1fb-88d3c5a276cb",
-//         "integration": {
-//           "appID": "aPDbsZzZQbrDynvW9RyS"
-//         },
-//         "issueDate": "2024-02-24T15:56:29.906Z",
-//         "redeemData": {},
-//         "initiatedBy": "OsdmSLaIU0TyNdPrN6xUS03tbEt2",
-//         "meta": {
-//           "payer": "434396c3-ac55-4c66-bd10-144ab5555500"
-//         },
-//         "updatedDate": "2024-02-24T15:56:31.417Z",
-//         "paymentDate": "2024-02-24T15:56:31.417Z",
-//         "status": "paid"
-//       },
-//       "issueID": "434396c3-ac55-4c66-bd10-144ab5555500_10_1708790189633"
-//     }
-//   }
-// }
