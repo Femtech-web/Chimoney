@@ -6,11 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
     "test": "jest",
     "lint:staged": "lint-staged",
     "pre-push": "npm run pre-push:test",
-    "pre-push:test": "prepush-if-changed"
+    "pre-push:test": "prepush-if-changed",
+    "lint": "npm run prettier:check && npm run eslint",
+    "lint:fix": "npm run eslint:fix && npm run prettier:fix",
+    "prettier:cli": "prettier \"**/*.ts\" \"**/*.js\" \"**/*.tsx\"",
+    "prettier:check": "npm run prettier:cli -- -l",
+    "prettier:fix": "npm run prettier:cli -- --write",
+    "eslint": "eslint --report-unused-disable-directives .",
+    "eslint:fix": "npm run eslint -- --fix"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
