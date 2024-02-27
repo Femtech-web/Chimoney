@@ -12,7 +12,7 @@ const sendProError = (err: AppError, req: Request, res: Response) => {
     console.log('ERROR 🔥:', err);
     return res.status(500).json({
       title: 'Something went very wrong!',
-      message: err.message,
+      error: err.message,
     });
   }
 

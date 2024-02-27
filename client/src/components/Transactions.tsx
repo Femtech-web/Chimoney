@@ -3,23 +3,31 @@
 import React from "react";
 import Link from "next/link";
 import { Container, Box, styled } from "@mui/material";
-import { transactions } from "./dummy";
 import Transaction from "./Transaction";
+import { useAppContext } from "@/context";
 
 const Transactions = () => {
+  const { userWallet } = useAppContext();
+  const userTransactions = userWallet.user_wallet.transactions;
+  console.log(userTransactions);
+
   return (
     <Wrapper maxWidth="sm">
       <div className="transaction_wrapper">
-        {transactions && transactions.length !== 0 ? (
+        {userTransactions && userTransactions.length > 1 ? (
           <Box>
             <div className="header">
               <h2>Transactions</h2>
               <CustomLink href="/transactions">view all</CustomLink>
             </div>
             <List>
-              {transactions.map((transaction, index) => (
-                <Transaction key={index} {...transaction} />
-              ))}
+              {userTransactions
+                .slice()
+                .reverse()
+                .slice(0, 4)
+                .map((transaction: any, index: number) => (
+                  <Transaction key={index} {...transaction} />
+                ))}
             </List>
           </Box>
         ) : (

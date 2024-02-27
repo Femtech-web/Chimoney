@@ -1,23 +1,22 @@
 import axios from "axios";
+import { getEncryptedData } from "@/utils/encryptData";
 
-// const BASE_URL = import.meta.env.VITE_LIVE_BASE_URL;
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const API = axios.create({
   baseURL: BASE_URL,
 })
 
 API.interceptors.request.use((req) => {
-  const user = JSON.parse(localStorage.getItem('fintrust-current-user'));
-  if (localStorage.getItem('fintrust-token') && user) {
-    console.log(user._id)
-    req.headers.authorization = `Bearer ${JSON.parse(localStorage.getItem('fintrust-token'))}`;
-    req.headers["X-UserId"] = `${user._id}`
+  const storedUser: any = getEncryptedData("chipay-user");
+  if (storedUser) {
+    console.log(storedUser.uid)
+
+    req.headers["X-UserId"] = `${storedUser.uid}`
   }
 
   return req;
 });
 
+export default API;
 
-
-export { API };

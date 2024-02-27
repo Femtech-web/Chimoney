@@ -6,6 +6,5 @@ export function formatUser(user: any) {
     photoURL: user.photoURL,
     isAnonymous: user.isAnonymous,
     uid: user.uid,
-
   }
 }

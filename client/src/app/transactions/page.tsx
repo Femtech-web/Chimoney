@@ -12,18 +12,20 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { transactions } from "@/components/dummy";
 import { List } from "@/components/Transactions";
 import Transaction from "@/components/Transaction";
 import { CustomBox as LoaderBox } from "@/helpers/Loader";
+import { useAppContext } from "@/context";
 
 const TransactionsPage = () => {
+  const { userWallet } = useAppContext();
   const [rangeSelector, setRangeSelector] = useState<boolean>(false);
+  const userTransactions = userWallet.user_wallet.transactions;
 
   return (
     <Container maxWidth="sm">
       <Box>
-        {transactions && transactions.length !== 0 ? (
+        {userTransactions && userTransactions.length > 1 ? (
           <CustomBox>
             <div className="header">
               <h2>Last 20 Transactions</h2>
@@ -36,14 +38,16 @@ const TransactionsPage = () => {
               </span>
             </div>
             <List>
-              {transactions.map((transaction, index) => (
-                <CustomLink
-                  key={index}
-                  href={`/transactions/${transaction.id}`}
-                >
-                  <Transaction {...transaction} />
-                </CustomLink>
-              ))}
+              {userTransactions
+                .reverse()
+                .map((transaction: any, index: number) => (
+                  <CustomLink
+                    key={index}
+                    href={`/transactions/${transaction.id}`}
+                  >
+                    <Transaction {...transaction} />
+                  </CustomLink>
+                ))}
             </List>
           </CustomBox>
         ) : (

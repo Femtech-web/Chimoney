@@ -28,6 +28,7 @@ class Controller {
   static async createUserWallet(req: Request, res: Response, next: NextFunction) {
     try {
       const user_data: SubAcctRequestBody = req.body;
+      console.log(user_data)
 
       if (!user_data.name || !user_data.email) {
         return next(new AppError(`No credentials provided`, 400));
@@ -46,7 +47,7 @@ class Controller {
         if (response.data && response.status === "success") {
           const user_account = formatSubAccount(response.data, "wallet");
 
-          return res.status(200).json({
+          return res.status(201).json({
             success: true,
             message: `New account has been created!`,
             created_account,
@@ -87,9 +88,7 @@ class Controller {
   }
 
   static async payNormal(body_params: PayoutChimoneyReqBody, next: NextFunction) {
-
     try {
-
       if (!Array.isArray(body_params.chimoneys) || body_params.chimoneys.length === 0) {
         return next(new AppError(`No receivers provided`, 400));
       }
@@ -143,6 +142,7 @@ class Controller {
       return res.status(200).json({
         success: true,
         message: `Payout successful!`,
+        type: query,
         data: payment_response,
       })
     } catch (err: any) {

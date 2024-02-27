@@ -4,7 +4,7 @@ import React, { useEffect, ReactNode } from "react";
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 import FullPageLoader from "@/helpers/Loader";
-import { getLocalStorageItem } from "@/utils/localStorage";
+import { getEncryptedData } from "@/utils/encryptData";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -14,9 +14,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
   const { isLoading } = useAppContext();
 
-  const storedValue: string | null = getLocalStorageItem("chipay-user-active");
-  const isUserLoggedIn: string =
-    storedValue !== null ? JSON.parse(storedValue) : null;
+  const isUserLoggedIn: boolean = getEncryptedData("chipay-user-active");
 
   useEffect(() => {
     if (!isUserLoggedIn) {
@@ -33,9 +31,7 @@ export const PublicRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
   const { isLoading } = useAppContext();
 
-  const storedValue: string | null = getLocalStorageItem("chipay-user-active");
-  const isUserLoggedIn: string =
-    storedValue !== null ? JSON.parse(storedValue) : null;
+  const isUserLoggedIn: boolean = getEncryptedData("chipay-user-active");
 
   useEffect(() => {
     if (isUserLoggedIn) {

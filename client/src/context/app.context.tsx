@@ -10,10 +10,17 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { AppContextProps, AppProviderProps, AlertProps } from "./types";
+import {
+  AppContextProps,
+  AppProviderProps,
+  AlertProps,
+  WalletFormProps,
+  NormalFormProps,
+} from "./types";
 import { useRouter } from "next/navigation";
 import { SignupProps, SigninProps } from "@/components/types";
-import { getLocalStorageItem } from "@/utils/localStorage";
+import { CREATE_WALLET, PAYOUT } from "@/API/api.call";
+import { getEncryptedData, setEncryptedData } from "@/utils/encryptData";
 import { formatUser } from "@/utils/formatUser";
 import { signupRequiredFields } from "@/components/dummy";
 import "@/configs/firebase";
@@ -26,6 +33,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
+import { WalletProps } from "@/API/types";
 
 export const AppContext = createContext<AppContextProps | undefined>(undefined);
 
@@ -63,7 +71,6 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   ) => {
     const { name, value } = e.target;
     setFormData((prev: any) => ({ ...prev, [name]: value }));
-    console.log(value);
   };
 
   const handleClickShowPassword = () =>
@@ -73,16 +80,59 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     event.preventDefault();
   };
 
+  // ------------------------- App states --------------------------------------
+  const [walletPayoutForm, setWalletPayoutForm] = useState<WalletFormProps>({
+    receiver: "",
+    amount: 0,
+  });
+  const [normalPayoutForm, setNormalPayoutForm] = useState<NormalFormProps>({
+    email: "",
+    amount: 0,
+  });
+
+  const handlePayout = async (type: string) => {
+    if (isLoading) return;
+    setIsLoading(true);
+
+    const walletId = userWallet.account_id;
+    if (type === "anyone") {
+      const payload = normalPayoutForm;
+      await PAYOUT({
+        payload,
+        type,
+        handleAlert,
+        setIsLoading,
+        setUserWallet,
+        walletId,
+      });
+
+      setNormalPayoutForm({ email: "", amount: 0 });
+    } else {
+      const payload = walletPayoutForm;
+      await PAYOUT({
+        payload,
+        type,
+        handleAlert,
+        setIsLoading,
+        setUserWallet,
+        walletId,
+      });
+
+      setWalletPayoutForm({ receiver: "", amount: 0 });
+    }
+  };
+
   // ------------------------- Authentication Phases --------------------------------------
-  const storedValue: string | null = getLocalStorageItem("chipay-user");
-  const storedUser: any = storedValue !== null ? JSON.parse(storedValue) : null;
+  const storedUser: any = getEncryptedData("chipay-user");
+  const storedWallet: any = getEncryptedData("chipay-wallet");
   const router = useRouter();
 
   const [user, setUser] = useState<any | null>(storedUser);
+  const [userWallet, setUserWallet] = useState<any | null>(storedWallet);
   const auth = getAuth();
 
   // --------- handleAlert ------------
-  function handleAlert({ msg, type }: { msg: string; type: string }) {
+  function handleAlert({ msg, type }: AlertProps) {
     setIsLoading(false);
     setAlert({ msg, type });
     setShowAlert(true);
@@ -156,7 +206,20 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       );
 
       if (res.user) {
-        console.log(res);
+        let userName = signupForm.full_name;
+        setEncryptedData(userName, "chipay-userName");
+        const userData: WalletProps = {
+          name: signupForm.full_name,
+          email: res.user.email,
+        };
+
+        await CREATE_WALLET({
+          userData,
+          handleAlert,
+          setUserWallet,
+          setIsLoading,
+        });
+
         reset("signup");
 
         router.push("/auth/login");
@@ -207,8 +270,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
 
       if (res.user) {
         const newUser = formatUser(res.user);
-        localStorage.setItem("chipay-user-active", JSON.stringify(true));
-        localStorage.setItem("chipay-user", JSON.stringify(newUser));
+        setUser(newUser);
+        setEncryptedData(true, "chipay-user-active");
+        setEncryptedData(newUser, "chipay-user");
         reset("signin");
 
         console.log(res);
@@ -252,12 +316,21 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         isLoading,
         showAlert,
         alert,
+        user,
+        userWallet,
+        normalPayoutForm,
+        walletPayoutForm,
+        setWalletPayoutForm,
+        setNormalPayoutForm,
+        setUserWallet,
+        setUser,
         setAlert,
         setShowAlert,
         setIsLoading,
         setSignupForm,
         setSigninForm,
         setShowPassword,
+        handlePayout,
         handleSignup,
         handleSignin,
         handleSignout,

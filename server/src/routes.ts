@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get("/", Controller.SendHealth);
 router.get("/wallet", ValidateUser, Controller.fetchWallet)
-router.post("/createWallet", ValidateUser, Controller.createUserWallet);
+router.post("/createWallet", Controller.createUserWallet);
 router.post("/payout", ValidateUser, Controller.payoutChimoney);
 
 export default router;
