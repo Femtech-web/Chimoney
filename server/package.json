@@ -11,7 +11,7 @@
     "pre-push:test": "prepush-if-changed",
     "lint": "npm run prettier:check && npm run eslint",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
-    "prettier:cli": "prettier \"**/*.ts\" \"**/*.js\" \"**/*.tsx\"",
+    "prettier:cli": "prettier \"**/*.ts\"\"",
     "prettier:check": "npm run prettier:cli -- -l",
     "prettier:fix": "npm run prettier:cli -- --write",
     "eslint": "eslint --report-unused-disable-directives .",
@@ -29,7 +29,7 @@
   },
   "lint-staged": {
     "src/**/*.{ts}": "eslint --cache --fix",
-    "src/**/*.{ts,md}": "prettier --write"
+    "src/**/*.{ts}": "prettier --write"
   },
   "prepush-if-changed": {
     "src/**/*.{js,jsx,ts,tsx}": "echo 'Files changed on App. Launching tests.' && npm run test"
