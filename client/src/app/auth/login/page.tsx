@@ -2,8 +2,7 @@
 
 import React from "react";
 import { useAuthContext, useAppContext } from "@/context";
-import { CustomButton } from "../../page";
-import { CustomContainer } from "../signup/page";
+import { CustomButton, CustomContainer } from "../../../helpers/CustomStyles";
 import { PublicRoute } from "@/helpers/RouteProtection";
 import {
   Box,

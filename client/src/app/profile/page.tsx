@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
-import {
-  Wrapper,
-  CustomPaper,
-  CustomBox,
-} from "../transactions/[transactionId]/page";
 import { styled } from "@mui/material";
 import { useAppContext, useAuthContext } from "@/context";
+import {
+  TransactionCustomBox,
+  TransactionCustomPaper,
+  TransactionWrapper,
+} from "@/helpers/CustomStyles";
 
 const ProfileBar = ({
   header,
@@ -29,26 +29,26 @@ const ProfilePage = () => {
   const { userWallet } = useAppContext();
 
   return (
-    <Wrapper maxWidth="sm">
+    <TransactionWrapper maxWidth="sm">
       <h2>Profile</h2>
       <ProfilePaper>
         <ProfileBar header="Name" subtext={userWallet.user_name} />
         <ProfileBar header="Email" subtext={user.email} />
         <ProfileBar header="Chimoney ID" subtext={userWallet.account_id} />
       </ProfilePaper>
-    </Wrapper>
+    </TransactionWrapper>
   );
 };
 
 export default ProfilePage;
 
-const ProfilePaper = styled(CustomPaper)`
+const ProfilePaper = styled(TransactionCustomPaper)`
   display: flex;
   flex-direction: column;
   gap: 1rem;
 `;
 
-const ProfileBox = styled(CustomBox)`
+const ProfileBox = styled(TransactionCustomBox)`
   border: 1px solid #ebecf2;
   padding: 1rem;
   border-radius: 5px;

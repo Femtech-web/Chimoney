@@ -1,20 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Container,
-  Box,
-  styled,
-  Paper,
-  Button,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Box, styled, Paper, Button, Stack, TextField } from "@mui/material";
 import { useAppContext } from "@/context";
 import { AiOutlineClose } from "react-icons/ai";
 import { payoutOptions } from "./dummy";
 import { CustomBox as LoaderBox } from "@/helpers/Loader";
-import { CustomButton as SubmitButton } from "@/app/page";
+import { CustomButton as SubmitButton } from "@/helpers/CustomStyles";
 
 const Wallet = () => {
   const {

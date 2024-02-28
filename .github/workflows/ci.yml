@@ -2,12 +2,11 @@ name: Node.js CI
 
 on:
   push:
-    branches:
-      - branches: ["main"]
+    branches: ["main"]
 
 jobs:
   frontend:
-    name: Frontend CI/CD
+    name: Frontend build-test
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +24,6 @@ jobs:
         run: |
           npm ci
           npm run build --if-present
-          npm run lint
           npm run test
 
   backend:

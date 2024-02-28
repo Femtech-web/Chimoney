@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
+import { CustomButton } from "@/helpers/CustomStyles";
 import { PublicRoute } from "@/helpers/RouteProtection";
 
 export default function Home() {
@@ -37,9 +36,3 @@ export default function Home() {
     </PublicRoute>
   );
 }
-
-export const CustomButton = styled(Button)`
-  font-family: "Poppins", sans-serif;
-  text-transform: none;
-  font-size: 1.3rem;
-`;

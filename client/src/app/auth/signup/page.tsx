@@ -1,14 +1,12 @@
 "use client";
 
 import React from "react";
-import { CustomButton } from "../../page";
+import { CustomButton, CustomContainer } from "../../../helpers/CustomStyles";
 import { useAppContext, useAuthContext } from "@/context";
 import { PublicRoute } from "@/helpers/RouteProtection";
 import {
   Box,
-  Container,
   Stack,
-  styled,
   TextField,
   FormControl,
   InputLabel,
@@ -111,32 +109,3 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
-
-/* -------------------- styles ------------------------------ */
-
-export const CustomContainer = styled(Container)`
-  min-height: 100vh;
-  padding: 7% 0;
-
-  h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .btm_text {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-    gap: 0.5rem;
-
-    a {
-      text-decoration: underline;
-      cursor: pointer;
-      &:hover {
-        color: blue;
-      }
-    }
-  }
-`;
-
-/* ------------------- styles ------------------------------------ */
