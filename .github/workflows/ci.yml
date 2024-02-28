@@ -2,12 +2,11 @@ name: Node.js CI
 
 on:
   push:
-    branches:
-      - branches: ["main"]
+    branches: ["main"]
 
 jobs:
   frontend:
-    name: Frontend CI/CD
+    name: Frontend build-test
     runs-on: ubuntu-latest
 
     steps:
