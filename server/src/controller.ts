@@ -1,34 +1,42 @@
 import { Response, Request, NextFunction } from "express";
-import { PrismaClient } from '@prisma/client';
-import AppError from './helpers/appError';
+import { PrismaClient } from "@prisma/client";
+import AppError from "./helpers/appError";
 import { emailValidator } from "./utils/email.validator";
 import { formatSubAccount } from "./utils/format.subAccount";
+import { formatTransaction } from "./utils/format.transaction";
 import {
   SubAcctRequestBody,
   PayoutWalletReqBody,
-  PayoutChimoneyReqBody
-} from './typings/types';
+  PayoutChimoneyReqBody,
+  GetTransactionReqBody,
+} from "./typings/types";
 import {
   CREATE_SUBACCOUNT_API,
   GET_SUBACCOUNT_API,
   PAYOUT_CHIMONEY_API,
-  PAYOUT_WALLET_API
+  PAYOUT_WALLET_API,
+  GET_SINGLE_TRANSACTION_API,
 } from "./API/api.calls";
 import { formatPayout } from "./utils/format.payout";
 
 const prisma = new PrismaClient();
 // id: 58329172-5e3e-48f9-95ef-19ef2cb194fb
 // id: 434396c3-ac55-4c66-bd10-144ab5555500
+// 58329172-5e3e-48f9-95ef-19ef2cb194fb_10_1708910437210
+// 58329172-5e3e-48f9-95ef-19ef2cb194fb_10_1708910437210
 
 class Controller {
   static async SendHealth(req: Request, res: Response) {
-    res.status(200).json({ message: 'Everything is good!' });
+    res.status(200).json({ message: "Everything is good!" });
   }
 
-  static async createUserWallet(req: Request, res: Response, next: NextFunction) {
+  static async createUserWallet(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const user_data: SubAcctRequestBody = req.body;
-      console.log(user_data)
 
       if (!user_data.name || !user_data.email) {
         return next(new AppError(`No credentials provided`, 400));
@@ -52,7 +60,7 @@ class Controller {
             message: `New account has been created!`,
             created_account,
             data: user_account,
-          })
+          });
         }
       }
     } catch (err: any) {
@@ -80,21 +88,53 @@ class Controller {
           success: true,
           message: `User account fetched successfully!`,
           data: user_account,
-        })
+        });
       }
     } catch (err) {
-      next(err)
+      next(err);
     }
   }
 
-  static async payNormal(body_params: PayoutChimoneyReqBody, next: NextFunction) {
+  static async fetchSingleTransaction(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      if (!Array.isArray(body_params.chimoneys) || body_params.chimoneys.length === 0) {
+      const body_params: GetTransactionReqBody = req.body;
+      if (!body_params.issueID || !body_params.subAccount) {
+        return next(new AppError(`No parameters provided`, 400));
+      }
+
+      const { data, status } = await GET_SINGLE_TRANSACTION_API(body_params);
+      if (data && status === "success") {
+        const formattedTransaction = formatTransaction(data[0]);
+
+        return res.status(200).json({
+          success: true,
+          message: `Transaction for ${body_params.issueID} fetched successfully!`,
+          data: formattedTransaction,
+        });
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async payNormal(
+    body_params: PayoutChimoneyReqBody,
+    next: NextFunction,
+  ) {
+    try {
+      if (
+        !Array.isArray(body_params.chimoneys) ||
+        body_params.chimoneys.length === 0
+      ) {
         return next(new AppError(`No receivers provided`, 400));
       }
 
-      const allEmails = body_params.chimoneys.map(receiver => {
-        if ('email' in receiver) {
+      const allEmails = body_params.chimoneys.map((receiver) => {
+        if ("email" in receiver) {
           return receiver.email;
         }
       });
@@ -104,13 +144,12 @@ class Controller {
         if (!isValidEmail) {
           return next(new AppError(`Email is not valid`, 400));
         }
-      })
+      });
 
       const { data, status } = await PAYOUT_CHIMONEY_API(body_params);
       if (data && status === "success") {
-        return formatPayout(data);;
+        return formatPayout(data);
       }
-
     } catch (err) {
       throw err;
     }
@@ -129,9 +168,10 @@ class Controller {
           return next(new AppError(`No parameters provided`, 400));
         }
 
-        const { data, status } = await PAYOUT_WALLET_API(body_params as PayoutWalletReqBody);
+        const { data, status } = await PAYOUT_WALLET_API(
+          body_params as PayoutWalletReqBody,
+        );
         if (data && status === "success") {
-          console.log(data, status);
           payment_response = formatPayout(data);
         }
       } else {
@@ -144,7 +184,7 @@ class Controller {
         message: `Payout successful!`,
         type: query,
         data: payment_response,
-      })
+      });
     } catch (err: any) {
       next(err);
     }

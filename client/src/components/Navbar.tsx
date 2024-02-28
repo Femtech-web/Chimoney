@@ -15,26 +15,18 @@ import {
   styled,
 } from "@mui/material";
 import { useOutsideClick } from "@/hooks/outside.click";
-import { useAppContext } from "@/context";
+import { navbarList } from "./dummy";
+import { useAuthContext, useAppContext } from "@/context";
 
 const Navbar = () => {
-  const { handleSignout } = useAppContext();
+  const { handleSignout } = useAuthContext();
+  const { userWallet } = useAppContext();
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
-
-  const lists = [
-    {
-      name: "Your Profile",
-      url: "/profile",
-    },
-    {
-      name: "Your Transactions",
-      url: "/transactions",
-    },
-  ];
 
   const handleClose = () => setIsProfileOpen((prev) => !prev);
   const handleOutside = () => setIsProfileOpen(false);
   const ref = useOutsideClick(handleOutside);
+  const userName = userWallet?.user_name.split(" ");
 
   const handleLogout = () => {
     setIsProfileOpen(false);
@@ -54,7 +46,11 @@ const Navbar = () => {
         </Link>
       </div>
       <div className="name_wrapper" onClick={handleClose}>
-        <Avatar sx={{ bgcolor: "#000" }}>AO</Avatar>
+        <Avatar sx={{ bgcolor: "#000" }}>
+          {userName.length >= 2
+            ? `${userName[0].charAtName[1].charAt(0)}`
+            : userName[0].charAt(0)}
+        </Avatar>
         <span>
           <Image
             src="/Arrow-Down.svg"
@@ -67,7 +63,7 @@ const Navbar = () => {
       {isProfileOpen && (
         <NavBox elevation={3}>
           <List>
-            {lists.map((list, index) => (
+            {navbarList.map((list, index) => (
               <ListItem
                 disablePadding
                 key={index}

@@ -7,12 +7,7 @@ import { BsArrowLeft } from "react-icons/bs";
 const GoBack = () => {
   return (
     <CustomBox>
-      <BsArrowLeft
-        fontSize={20}
-        cursor="pointer"
-        className="mr-10"
-        onClick={() => window.history.back()}
-      />
+      <BsArrowLeft fontSize={20} onClick={() => window.history.back()} />
     </CustomBox>
   );
 };
@@ -24,4 +19,9 @@ const CustomBox = styled(Box)`
   display: flex;
   align-items: center;
   padding: 1rem 3.5rem;
+  cursor: pointer;
+
+  @media (max-width: 640px) {
+    padding: 1rem 1.5rem;
+  }
 `;

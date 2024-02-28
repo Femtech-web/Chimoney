@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
-import { AppProvider } from "@/context";
+import { AppProvider, AuthProvider } from "@/context";
 import AlertBox from "@/helpers/AlertBox";
 import theme from "@/configs/theme";
 import "./globals.css";
@@ -33,8 +33,10 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <AppProvider>
-              <AlertBox />
-              {children}
+              <AuthProvider>
+                <AlertBox />
+                {children}
+              </AuthProvider>
             </AppProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useAppContext } from "@/context";
+import { useAuthContext, useAppContext } from "@/context";
 import { CustomButton } from "../../page";
 import { CustomContainer } from "../signup/page";
 import { PublicRoute } from "@/helpers/RouteProtection";
@@ -18,12 +18,10 @@ import {
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 const LoginPage = () => {
+  const { handleSignin, signinForm, setSigninForm } = useAuthContext();
   const {
-    signinForm,
-    setSigninForm,
     handleChange,
     showPassword,
-    handleSignin,
     handleClickShowPassword,
     handleMouseDownPassword,
   } = useAppContext();

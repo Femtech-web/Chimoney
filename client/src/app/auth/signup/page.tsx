@@ -2,7 +2,7 @@
 
 import React from "react";
 import { CustomButton } from "../../page";
-import { useAppContext } from "@/context";
+import { useAppContext, useAuthContext } from "@/context";
 import { PublicRoute } from "@/helpers/RouteProtection";
 import {
   Box,
@@ -19,12 +19,10 @@ import {
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 const SignupPage = () => {
+  const { signupForm, setSignupForm, handleSignup } = useAuthContext();
   const {
-    signupForm,
-    setSignupForm,
     handleChange,
     showPassword,
-    handleSignup,
     handleClickShowPassword,
     handleMouseDownPassword,
   } = useAppContext();

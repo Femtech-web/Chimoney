@@ -1,28 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Container, Box, Paper, styled, Divider } from "@mui/material";
-import { usePathname } from "next/navigation";
-import { transactions } from "@/components/dummy";
+import { TransactionProps } from "@/components/Transaction";
 import Loader from "@/helpers/Loader";
-
-interface TransactionProps {
-  id: number;
-  date: string;
-  type: string;
-  amount: string;
-  initiator: string;
-  bank: string;
-  acctNo: string;
-  desc: string;
-}
+import { GET_SINGLE_TRANSACTION } from "@/API/api.call";
+import { useAppContext } from "@/context";
+import { formatLocalDate } from "@/utils/formatDate";
 
 const Bar = ({
   header,
   subtext,
 }: {
   header: string;
-  subtext: string | undefined;
+  subtext: string | undefined | null;
 }) => {
   return (
     <CustomBox>
@@ -34,38 +26,62 @@ const Bar = ({
 
 const TransactionPage = () => {
   const pathName = usePathname();
-  const transactionId = parseInt(pathName.split("/")[2]);
+  const router = useRouter();
+  const transactionId = pathName.split("/")[2];
+  const { userWallet, handleAlert } = useAppContext();
   const [transaction, setTransaction] = useState<TransactionProps | undefined>(
-    undefined
+    undefined,
   );
   console.log(transactionId);
 
-  useEffect(() => {
-    function fetchTarget() {
-      const foundItem = transactions.find((item) => item.id === transactionId);
+  const transactionDate = formatLocalDate(transaction?.paymentDate);
+  const redeemDate = formatLocalDate(transaction?.redeemDate);
 
-      return foundItem;
+  useEffect(() => {
+    const payload = {
+      issueID: transactionId,
+      subAccount: userWallet.account_id,
+    };
+
+    async function fetchTarget() {
+      const res = await GET_SINGLE_TRANSACTION({
+        payload,
+        handleAlert,
+        router,
+      });
+
+      setTransaction(res);
     }
 
-    const res = fetchTarget();
-    setTransaction(res);
+    fetchTarget();
   }, [transactionId]);
 
-  if (transaction === null) return <Loader />;
+  if (transaction === null || transaction === undefined) return <Loader />;
 
   return (
     <Wrapper maxWidth="sm">
       <h2>Transaction details</h2>
       <CustomPaper elevation={3}>
-        <Bar header="Transaction Date" subtext={transaction?.date} />
+        <Bar header="Transaction Date" subtext={transactionDate} />
         <Divider />
-        <Bar header="Transaction Type" subtext={transaction?.type} />
+        <Bar header="Redeem Date" subtext={redeemDate || null} />
         <Divider />
-        <Bar header="Account Number" subtext={transaction?.acctNo} />
+        <Bar header="Wallet Type" subtext={transaction?.type} />
         <Divider />
-        <Bar header="Amount" subtext={transaction?.amount} />
+        <Bar header="Amount" subtext={`${transaction?.amount}$`} />
         <Divider />
-        <Bar header="Narration" subtext={transaction?.desc} />
+        <Bar header="Issuer" subtext={transaction?.issuer} />
+        <Divider />
+        <Bar header="Receiver" subtext={transaction?.receiver || null} />
+        <Divider />
+        <Bar
+          header="Delivery Status"
+          subtext={transaction?.deliveryStatus || null}
+        />
+        <Divider />
+        <Bar header="Status" subtext={transaction?.status} />
+        <Divider />
+        <Bar header="IssueID" subtext={transaction?.issueID} />
         <Divider />
       </CustomPaper>
     </Wrapper>
@@ -94,6 +110,7 @@ export const CustomPaper = styled(Paper)`
 export const CustomBox = styled(Box)`
   width: 100%;
   padding: 1rem 1.5rem;
+  gap: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -102,11 +119,13 @@ export const CustomBox = styled(Box)`
     font-size: 1rem;
     font-weight: 600;
     font-style: normal;
+    text-align: left;
   }
 
   p {
     font-size: 0.95rem;
     font-weight: 400;
     color: slategray;
+    text-align: right;
   }
 `;

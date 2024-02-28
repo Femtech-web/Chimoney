@@ -7,22 +7,22 @@ export const formatPayout = (type: string, payload: any) => {
   if (type === "anyone") {
     const newPayload = {
       email: payload.email,
-      valueInUSD: payload.amount,
+      valueInUSD: parseInt(payload.amount),
     };
 
     return {
       subAccount,
-      chimoneys: [newPayload]
-    }
+      chimoneys: [newPayload],
+    };
   } else {
     const newPayload = {
       receiver: payload.email,
-      valueInUSD: payload.amount,
+      valueInUSD: parseInt(payload.amount),
     };
 
     return {
       subAccount,
-      wallets: [newPayload]
-    }
+      wallets: [newPayload],
+    };
   }
-}
+};

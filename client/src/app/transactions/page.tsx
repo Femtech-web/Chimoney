@@ -24,7 +24,7 @@ const TransactionsPage = () => {
 
   return (
     <Container maxWidth="sm">
-      <Box>
+      <Box mb={4}>
         {userTransactions && userTransactions.length > 1 ? (
           <CustomBox>
             <div className="header">
@@ -40,10 +40,11 @@ const TransactionsPage = () => {
             <List>
               {userTransactions
                 .reverse()
+                .slice(0, 20)
                 .map((transaction: any, index: number) => (
                   <CustomLink
                     key={index}
-                    href={`/transactions/${transaction.id}`}
+                    href={`/transactions/${transaction.meta.issueID}`}
                   >
                     <Transaction {...transaction} />
                   </CustomLink>
@@ -67,7 +68,11 @@ const TransactionsPage = () => {
               <TextField type="date" helperText="to date" size="small" />
             </div>
             <div className="btn_two">
-              <Button variant="contained" color="secondary">
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => setRangeSelector(false)}
+              >
                 Apply
               </Button>
             </div>

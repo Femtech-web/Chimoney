@@ -37,3 +37,25 @@ export const signupRequiredFields = [
   "password",
   "confirm_password",
 ];
+
+export const payoutOptions = [
+  {
+    title: "Payout to anyone",
+    name: "anyone",
+  },
+  {
+    title: "Payout to chipay wallet",
+    name: "wallet",
+  },
+];
+
+export const navbarList = [
+  {
+    name: "Your Profile",
+    url: "/profile",
+  },
+  {
+    name: "Your Transactions",
+    url: "/transactions",
+  },
+];

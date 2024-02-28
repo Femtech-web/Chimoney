@@ -9,7 +9,6 @@ import { useAppContext } from "@/context";
 const Transactions = () => {
   const { userWallet } = useAppContext();
   const userTransactions = userWallet.user_wallet.transactions;
-  console.log(userTransactions);
 
   return (
     <Wrapper maxWidth="sm">

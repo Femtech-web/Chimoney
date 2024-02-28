@@ -37,3 +37,8 @@ export interface PayoutChimoneyReqBody {
   subAccount: string;
   chimoneys: ChimoneyReceivers[];
 }
+
+export interface GetTransactionReqBody {
+  issueID: String;
+  subAccount: string;
+}

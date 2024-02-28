@@ -5,7 +5,8 @@ import ValidateUser from "./middleware";
 const router = express.Router();
 
 router.get("/", Controller.SendHealth);
-router.get("/wallet", ValidateUser, Controller.fetchWallet)
+router.get("/wallet", ValidateUser, Controller.fetchWallet);
+router.post("/transaction", ValidateUser, Controller.fetchSingleTransaction);
 router.post("/createWallet", Controller.createUserWallet);
 router.post("/payout", ValidateUser, Controller.payoutChimoney);
 

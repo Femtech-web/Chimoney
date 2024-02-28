@@ -1,15 +1,32 @@
 import React from "react";
 import { BsArrowUp, BsArrowDown } from "react-icons/bs";
-import { Box, Paper, styled, Typography } from "@mui/material";
+import { Paper, styled, Typography } from "@mui/material";
+import { formatDate } from "@/utils/formatDate";
+import { determineType } from "@/utils/determineType";
 
-interface Props {
-  type: string;
-  desc: string;
+export interface TransactionProps {
+  id?: string;
+  description?: string;
   amount: string;
-  date: string;
+  meta: any;
+  newBalance?: string;
+  balanceBefore?: string;
+  trfMzt?: any;
+  type?: string;
+  receiver?: string;
+  issuer?: string;
+  issueID?: string;
+  paymentDate?: string;
+  redeemDate?: string;
+  currency?: string;
+  deliveryStatus?: string;
+  status?: string;
 }
 
-const Transaction = ({ type, desc, amount, date }: Props) => {
+const Transaction = ({ amount, description, meta }: TransactionProps) => {
+  const date = formatDate(meta.date._seconds);
+  const type = determineType(amount);
+
   return (
     <CustomBox elevation={3}>
       <span>
@@ -20,13 +37,19 @@ const Transaction = ({ type, desc, amount, date }: Props) => {
         )}
       </span>
       <div>
-        <p className="desc">{desc}</p>
+        <p className="desc">
+          {description
+            ? description.length < 20
+              ? description
+              : description?.slice(0, 20)
+            : null}
+        </p>
         <p className="date">{date}</p>
       </div>
       {type === "credit" ? (
-        <Typography color="green">{amount}</Typography>
+        <Typography color="green">{`${amount}$`}</Typography>
       ) : (
-        <Typography color="red">{amount}</Typography>
+        <Typography color="red">{`${amount}$`}</Typography>
       )}
     </CustomBox>
   );

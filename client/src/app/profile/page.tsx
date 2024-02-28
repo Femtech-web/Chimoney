@@ -7,8 +7,7 @@ import {
   CustomBox,
 } from "../transactions/[transactionId]/page";
 import { styled } from "@mui/material";
-import { useAppContext } from "@/context";
-import { getEncryptedData } from "@/utils/encryptData";
+import { useAppContext, useAuthContext } from "@/context";
 
 const ProfileBar = ({
   header,
@@ -26,14 +25,14 @@ const ProfileBar = ({
 };
 
 const ProfilePage = () => {
-  const { user, userWallet } = useAppContext();
-  const storedUserName: any = getEncryptedData("chipay-userName");
+  const { user } = useAuthContext();
+  const { userWallet } = useAppContext();
 
   return (
     <Wrapper maxWidth="sm">
       <h2>Profile</h2>
       <ProfilePaper>
-        <ProfileBar header="Name" subtext={storedUserName} />
+        <ProfileBar header="Name" subtext={userWallet.user_name} />
         <ProfileBar header="Email" subtext={user.email} />
         <ProfileBar header="Chimoney ID" subtext={userWallet.account_id} />
       </ProfilePaper>

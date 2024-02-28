@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useAppContext } from "@/context";
 import { AiOutlineClose } from "react-icons/ai";
+import { payoutOptions } from "./dummy";
 import { CustomBox as LoaderBox } from "@/helpers/Loader";
 import { CustomButton as SubmitButton } from "@/app/page";
 
@@ -28,17 +29,6 @@ const Wallet = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [currentOption, setCurrentOption] = useState<string>("anyone");
 
-  const options = [
-    {
-      title: "Payout to anyone",
-      name: "anyone",
-    },
-    {
-      title: "Payout to chipay wallet",
-      name: "wallet",
-    },
-  ];
-
   const handleSubmit = () => {
     setIsOpen(false);
     handlePayout(currentOption);
@@ -50,7 +40,7 @@ const Wallet = () => {
         <CustomPaper elevation={2}>
           <h2>Wallet</h2>
           <h3>Your Balance</h3>
-          <p>{`${"$"}${userWallet.user_wallet.balance}`}</p>
+          <p>{`${"$"}${userWallet?.user_wallet?.balance}`}</p>
           <CustomButton
             variant="contained"
             color="secondary"
@@ -67,7 +57,7 @@ const Wallet = () => {
           </span>
           <PaymentPaper>
             <Box className="option_box">
-              {options.map((option: any, index: number) => (
+              {payoutOptions.map((option: any, index: number) => (
                 <div
                   onClick={() => setCurrentOption(option.name)}
                   key={index}
