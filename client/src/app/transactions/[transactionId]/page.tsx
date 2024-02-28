@@ -39,7 +39,6 @@ const TransactionPage = () => {
   const [transaction, setTransaction] = useState<TransactionProps | undefined>(
     undefined,
   );
-  console.log(transactionId);
 
   const transactionDate = formatLocalDate(transaction?.paymentDate);
   const redeemDate = formatLocalDate(transaction?.redeemDate);
@@ -47,7 +46,7 @@ const TransactionPage = () => {
   useEffect(() => {
     const payload = {
       issueID: transactionId,
-      subAccount: userWallet.account_id,
+      subAccount: userWallet?.account_id,
     };
 
     async function fetchTarget() {

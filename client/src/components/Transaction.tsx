@@ -39,7 +39,7 @@ const Transaction = ({ amount, description, meta }: TransactionProps) => {
       <div>
         <p className="desc">
           {description
-            ? description.length < 20
+            ? description?.length < 20
               ? description
               : description?.slice(0, 20)
             : null}

@@ -32,9 +32,9 @@ const ProfilePage = () => {
     <TransactionWrapper maxWidth="sm">
       <h2>Profile</h2>
       <ProfilePaper>
-        <ProfileBar header="Name" subtext={userWallet.user_name} />
-        <ProfileBar header="Email" subtext={user.email} />
-        <ProfileBar header="Chimoney ID" subtext={userWallet.account_id} />
+        <ProfileBar header="Name" subtext={userWallet?.user_name} />
+        <ProfileBar header="Email" subtext={user?.email} />
+        <ProfileBar header="Chimoney ID" subtext={userWallet?.account_id} />
       </ProfilePaper>
     </TransactionWrapper>
   );

@@ -47,9 +47,9 @@ const Navbar = () => {
       </div>
       <div className="name_wrapper" onClick={handleClose}>
         <Avatar sx={{ bgcolor: "#000" }}>
-          {userName.length >= 2
-            ? `${userName[0].charAtName[1].charAt(0)}`
-            : userName[0].charAt(0)}
+          {userName?.length >= 2
+            ? `${userName[0]?.charAtName[1].charAt(0)}`
+            : userName[0]?.charAt(0)}
         </Avatar>
         <span>
           <Image

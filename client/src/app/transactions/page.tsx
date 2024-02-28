@@ -20,12 +20,12 @@ import { useAppContext } from "@/context";
 const TransactionsPage = () => {
   const { userWallet } = useAppContext();
   const [rangeSelector, setRangeSelector] = useState<boolean>(false);
-  const userTransactions = userWallet.user_wallet.transactions;
+  const userTransactions = userWallet?.user_wallet?.transactions;
 
   return (
     <Container maxWidth="sm">
       <Box mb={4}>
-        {userTransactions && userTransactions.length > 1 ? (
+        {userTransactions && userTransactions?.length > 1 ? (
           <CustomBox>
             <div className="header">
               <h2>Last 20 Transactions</h2>
@@ -44,7 +44,7 @@ const TransactionsPage = () => {
                 .map((transaction: any, index: number) => (
                   <CustomLink
                     key={index}
-                    href={`/transactions/${transaction.meta.issueID}`}
+                    href={`/transactions/${transaction?.meta.issueID}`}
                   >
                     <Transaction {...transaction} />
                   </CustomLink>
