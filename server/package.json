@@ -28,8 +28,8 @@
     "express": "^4.18.2"
   },
   "lint-staged": {
-    "src/**/*.{ts}": "eslint --cache --fix",
-    "src/**/*.{ts,md}": "prettier --write"
+    "src/**/*.ts": "eslint --cache --fix",
+    "src/**/*.ts": "prettier --write"
   },
   "prepush-if-changed": {
     "src/**/*.{js,jsx,ts,tsx}": "echo 'Files changed on App. Launching tests.' && npm run test"
