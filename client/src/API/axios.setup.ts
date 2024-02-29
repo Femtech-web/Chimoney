@@ -9,7 +9,7 @@ const API = axios.create({
 
 API.interceptors.request.use((req: any) => {
   const storedUser: any = getEncryptedData("chipay-user");
-  if (storedUser.uid) {
+  if (storedUser) {
     req.headers["X-UserId"] = `${storedUser.uid}`;
   }
 
