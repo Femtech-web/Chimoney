@@ -53,11 +53,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
 
   useEffect(() => {
     async function getWallet() {
-      const walletId = userWallet.account_id;
+      const walletId = userWallet?.account_id;
       await GET_WALLET({ walletId, setUserWallet, handleAlert });
     }
 
-    getWallet();
+    if (userWallet?.account_id) getWallet();
   }, []);
 
   // --------- handleAlert ------------
@@ -88,7 +88,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     if (isLoading) return;
     setIsLoading(true);
 
-    const walletId = userWallet.account_id;
+    const walletId = userWallet?.account_id;
     if (type === "anyone") {
       const payload = normalPayoutForm;
       await PAYOUT({

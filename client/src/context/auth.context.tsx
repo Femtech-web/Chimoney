@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { WalletProps } from "@/API/types";
 import { useAppContext } from ".";
 import { SignupProps, SigninProps } from "@/components/types";
-import { CREATE_WALLET } from "@/API/api.call";
+import { CREATE_WALLET, LOGIN_USER } from "@/API/api.call";
 import { getEncryptedData, setEncryptedData } from "@/utils/encryptData";
 import { formatUser } from "@/utils/formatUser";
 import { signupRequiredFields } from "@/components/dummy";
@@ -158,9 +158,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (res.user) {
         const newUser = formatUser(res.user);
-        setUser(newUser);
+        const userEmail = newUser.email;
+
+        const dbUser = await LOGIN_USER({
+          userEmail,
+          handleAlert,
+          setUserWallet,
+          setIsLoading,
+        });
+
+        const formattedUser = { ...newUser, displayName: dbUser.fullName };
+        setUser(formattedUser);
         setEncryptedData(true, "chipay-user-active");
-        setEncryptedData(newUser, "chipay-user");
+        setEncryptedData(formattedUser, "chipay-user");
         reset("signin");
 
         router.push("/dashboard");

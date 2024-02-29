@@ -17,6 +17,13 @@ export interface CreateWalletProps {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
+export interface LoginProps {
+  userEmail: string;
+  handleAlert: ({ msg }: AlertProps) => void;
+  setUserWallet: Dispatch<SetStateAction<any>>;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
+}
+
 export interface GetWalletProps {
   walletId: string;
   setUserWallet: Dispatch<SetStateAction<any>>;

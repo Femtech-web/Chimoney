@@ -5,7 +5,7 @@
   font-family: "Poppins", sans-serif;
 }
 
-.bg_wrapper{
+.bg_wrapper {
   min-height: 100vh;
   background-image: url("/Group1.png");
   background-position: center;
@@ -14,7 +14,7 @@
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.logo_container{
+.logo_container {
   display: flex;
   padding: 20px;
   width: 100%;
@@ -23,7 +23,7 @@
   justify-content: start;
 }
 
-.text-wrapper{
+.text-wrapper {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -31,30 +31,37 @@
   font-family: "Poppins", sans-serif;
   width: 100%;
   min-height: 80vh;
+}
 
-  h1 {
+.text-wrapper h1 {
+  font-size: 3rem;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 3.5rem;
+}
+
+.text-wrapper p {
+  text-align: center;
+  margin: 10px 0;
+}
+@media screen and (max-width: 726px) {
+  .text-wrapper h1 {
+    text-align: center;
     font-size: 3rem;
-    font-weight: 400;
-    font-style: normal;
-    line-height: 3.5rem;
+    line-height: normal;
   }
 
-  p {
-    text-align: center;
-    margin: 10px 0;
+  .logo_container {
+    padding: 10px;
   }
 }
 
-@media  screen and (max-width: 726px) {
-  .text-wrapper{
-    h1 {
-      text-align: center;
-      font-size: 3rem;
-      line-height: 3rem;
-    }
+@media screen and (max-width: 426px) {
+  .text-wrapper h1 {
+    font-size: 2rem;
   }
 
-  .logo_container{
-    padding: 10px;
+  .text-wrapper p {
+    font-size: 14px;
   }
 }

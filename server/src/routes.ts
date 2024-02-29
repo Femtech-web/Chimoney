@@ -8,6 +8,7 @@ router.get("/", Controller.SendHealth);
 router.get("/wallet", ValidateUser, Controller.fetchWallet);
 router.post("/transaction", ValidateUser, Controller.fetchSingleTransaction);
 router.post("/createWallet", Controller.createUserWallet);
+router.post("/login", Controller.loginUser);
 router.post("/payout", ValidateUser, Controller.payoutChimoney);
 
 export default router;

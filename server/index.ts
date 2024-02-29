@@ -20,14 +20,14 @@ app.use(bodyParser.json({ limit: '30mb' }));
 
 // SECURITY SETUP
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(morgan('dev'));
+app.use(morgan('combined'));
 app.use(xss());
 app.use(hpp());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 50,
-  standardHeaders: true,
+  standardHeaders: 'draft-7',
   message: 'Too many request from this IP, Please try again in 15 mins.',
 });
 app.use('/api', limiter);

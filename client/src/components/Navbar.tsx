@@ -26,12 +26,17 @@ const Navbar = () => {
   const handleClose = () => setIsProfileOpen((prev) => !prev);
   const handleOutside = () => setIsProfileOpen(false);
   const ref = useOutsideClick(handleOutside);
-  const userName = userWallet?.user_name.split(" ");
+  const userName = userWallet?.user_name?.split(" ");
+  console.log(userName);
 
   const handleLogout = () => {
     setIsProfileOpen(false);
     handleSignout();
   };
+
+  // {userName?.length >= 2
+  //   ? `${userName[0]?.charAtName[1].charAt(0)}`
+  //   : userName[0]?.charAt(0)}
 
   return (
     <CustomBox component="section" ref={ref}>
@@ -46,11 +51,7 @@ const Navbar = () => {
         </Link>
       </div>
       <div className="name_wrapper" onClick={handleClose}>
-        <Avatar sx={{ bgcolor: "#000" }}>
-          {userName?.length >= 2
-            ? `${userName[0]?.charAtName[1].charAt(0)}`
-            : userName[0]?.charAt(0)}
-        </Avatar>
+        <Avatar sx={{ bgcolor: "#000" }}>AO</Avatar>
         <span>
           <Image
             src="/Arrow-Down.svg"

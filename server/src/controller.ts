@@ -20,10 +20,6 @@ import {
 import { formatPayout } from "./utils/format.payout";
 
 const prisma = new PrismaClient();
-// id: 58329172-5e3e-48f9-95ef-19ef2cb194fb
-// id: 434396c3-ac55-4c66-bd10-144ab5555500
-// 58329172-5e3e-48f9-95ef-19ef2cb194fb_10_1708910437210
-// 58329172-5e3e-48f9-95ef-19ef2cb194fb_10_1708910437210
 
 class Controller {
   static async SendHealth(req: Request, res: Response) {
@@ -54,12 +50,19 @@ class Controller {
         const response = await GET_SUBACCOUNT_API(created_account.account_id);
         if (response.data && response.status === "success") {
           const user_account = formatSubAccount(response.data, "wallet");
+          const newUser = await prisma.user.create({
+            data: {
+              fullName: user_data.name,
+              email: user_data.email,
+              subaccountID: user_account.account_id,
+            },
+          });
 
           return res.status(201).json({
             success: true,
             message: `New account has been created!`,
             created_account,
-            data: user_account,
+            data: newUser,
           });
         }
       }
@@ -70,6 +73,46 @@ class Controller {
       }
 
       next(err);
+    }
+  }
+
+  static async loginUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.body.email) {
+        return next(new AppError(`No credentials provided`, 400));
+      }
+
+      const isValidEmail = emailValidator(req.body.email);
+      if (!isValidEmail) {
+        return next(new AppError(`Email is not valid`, 400));
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { email: req.body.email },
+      });
+
+      if (!user) {
+        return next(
+          new AppError(
+            "A user with the provided information does not exist.",
+            409,
+          ),
+        );
+      }
+
+      const response = await GET_SUBACCOUNT_API(user.subaccountID);
+      if (response.data && response.status === "success") {
+        const user_account = formatSubAccount(response.data, "wallet");
+
+        return res.status(200).json({
+          success: true,
+          message: `user logged in successfully!`,
+          newUser: user,
+          data: user_account,
+        });
+      }
+    } catch (error) {
+      next(error);
     }
   }
 
