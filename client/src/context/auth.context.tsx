@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       const res = await createUserWithEmailAndPassword(
         auth,
-        signupForm.email,
+        signupForm.email.toLowerCase(),
         signupForm.password,
       );
 
@@ -152,13 +152,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       const res = await signInWithEmailAndPassword(
         auth,
-        signinForm.email,
+        signinForm.email.toLowerCase(),
         signinForm.password,
       );
 
       if (res.user) {
+        console.log(res);
         const newUser = formatUser(res.user);
-        const userEmail = newUser.email;
+        const userEmail = newUser?.email;
+        console.log(newUser);
 
         const dbUser = await LOGIN_USER({
           userEmail,
@@ -166,17 +168,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUserWallet,
           setIsLoading,
         });
+        console.log(dbUser);
+        if (dbUser) {
+          const formattedUser = { ...newUser, displayName: dbUser.fullName };
+          setUser(formattedUser);
+          setEncryptedData(true, "chipay-user-active");
+          setEncryptedData(formattedUser, "chipay-user");
+          reset("signin");
 
-        const formattedUser = { ...newUser, displayName: dbUser.fullName };
-        setUser(formattedUser);
-        setEncryptedData(true, "chipay-user-active");
-        setEncryptedData(formattedUser, "chipay-user");
-        reset("signin");
-
-        router.push("/dashboard");
-        setIsLoading(false);
+          router.push("/dashboard");
+          setIsLoading(false);
+        }
       }
-      setIsLoading(false);
     } catch (err: any) {
       setIsLoading(false);
 

@@ -18,14 +18,14 @@ export const CREATE_WALLET = async ({
   try {
     console.log(userData);
     const { data, status } = await API.post("/createWallet", userData);
+    console.log(data);
 
     if (data && status === 201) {
-      // setUserWallet(data);
-      // setEncryptedData(data.data, "chipay-wallet");
       setIsLoading(false);
       handleAlert({ msg: "wallet created successfully!" });
     }
   } catch (err: any) {
+    console.log(err);
     setIsLoading(false);
     handleAlert({ msg: err.response.data.error, type: "err" });
   }
@@ -41,7 +41,6 @@ export const LOGIN_USER = async ({
     const { data, status } = await API.post("/login", { email: userEmail });
 
     if (data && status === 200) {
-      console.log(data.data);
       setUserWallet(data.data);
       setEncryptedData(data.data, "chipay-wallet");
       setIsLoading(false);

@@ -7,13 +7,18 @@ const API = axios.create({
   baseURL: BASE_URL,
 });
 
-API.interceptors.request.use((req: any) => {
-  const storedUser: any = getEncryptedData("chipay-user");
-  if (storedUser.uid) {
-    req.headers["X-UserId"] = `${storedUser.uid}`;
-  }
+API.interceptors.request.use(
+  (req) => {
+    const storedUser: any = getEncryptedData("chipay-user");
+    if (storedUser) {
+      req.headers["X-UserId"] = `${storedUser.uid}`;
+    }
 
-  return req;
-});
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  },
+);
 
 export default API;
