@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Frontend
 
-## Getting Started
+This is the frontend part of a simple web application. It allows users to sign up, log in, view their dashboard, send and receive payments, view transaction history, and manage their profile. The application is built using Typescript, React with Next.js and styled using Material UI components.
 
-First, run the development server:
+## Technologies Used:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Framework:** React with Next.js
+- **Language:** TypeScript
+- **Styling:** Material UI for components and styling
+- **User Authentication:** Firebase Authentication
+- **API Integration:** Chimoney API for wallet creation, sending and receiving payments
+- **Deployment:** Vercel
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### User Authentication:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Users can sign up securely using their full name, email, and password through Firebase Authentication.
+- Upon signup, a wallet (Chimoney subaccount) is automatically created for the user through the Chimoney API.
+- Users can log in securely using their email and password.
 
-## Learn More
+### Dashboard:
 
-To learn more about Next.js, take a look at the following resources:
+- The dashboard page displays the user's account balance and recent transactions.
+- Users can perform actions such as sending and receiving payments directly from the dashboard.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Send Payment:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Users can send payments by providing the recipient's email or Chimoney user ID and specifying the amount to send.
+- Payments are made securely using the Chimoney API.
 
-## Deploy on Vercel
+### Receive Payment:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Users can receive payments from other users, which are reflected in their account balance and transaction history.
+- Payments can be received via email or phone number, powered by Chimoney.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Transaction History:
+
+- The transaction history page displays all user transactions in batches of 20, including details such as transaction date, type (sent or received), amount, and recipient/sender information.
+- Transactions are fetched securely using the Chimoney API.
+
+### Profile Management:
+
+- Users can view their simple profile information on the profile page.
+- Profile details may include the user's name and email.
+
+### Security:
+
+- Sensitive user data, such as passwords and payment information, is stored securely and encrypted.
+- Necessary security measures are implemented to prevent common vulnerabilities such as XSS and CSRF attacks.
+
+## Getting Started:
+
+To run this frontend application locally or contribute to its development, follow these steps:
+
+1. Clone the repository to your local machine.
+2. Navigate to the `client` directory.
+3. Install dependencies by running `npm install`.
+4. Create a `.env.local` file and add necessary environment variables (e.g., Firebase configuration).
+5. Run the development server by running `npm run dev`.
