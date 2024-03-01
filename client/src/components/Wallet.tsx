@@ -142,6 +142,7 @@ const CustomPaper = styled(Paper)`
   min-width: 500px;
   padding: 1rem;
   text-align: center;
+  overflow-x: hidden;
 
   h2 {
     font-weight: 400;
