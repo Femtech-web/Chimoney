@@ -63,6 +63,7 @@ export const TransactionCustomBox = styled(Box)`
     font-weight: 600;
     font-style: normal;
     text-align: left;
+    flex: 1;
   }
 
   p {
@@ -70,5 +71,10 @@ export const TransactionCustomBox = styled(Box)`
     font-weight: 400;
     color: slategray;
     text-align: right;
+    flex: 1;
+  }
+
+  @media (max-width: 426px) {
+    padding: 1rem 0.5rem;
   }
 `;
