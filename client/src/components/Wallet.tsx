@@ -163,10 +163,6 @@ const CustomPaper = styled(Paper)`
     font-style: normal;
     font-size: 2.3rem;
   }
-
-  @media (max-width: 640px) {
-    min-width: fit-content;
-  }
 `;
 
 export const CustomButton = styled(Button)`
