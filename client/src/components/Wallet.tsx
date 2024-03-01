@@ -163,6 +163,10 @@ const CustomPaper = styled(Paper)`
     font-style: normal;
     font-size: 2.3rem;
   }
+
+  @media (max-width: 640px) {
+    min-width: fit-content;
+  }
 `;
 
 export const CustomButton = styled(Button)`
@@ -217,6 +221,16 @@ const PaymentPaper = styled(Paper)`
     background-color: black;
     border-radius: 2px 2px 0 0;
     height: 3px;
+  }
+
+  @media (max-width: 640px) {
+    min-width: fit-content;
+  }
+
+  @media (max-width: 426px) {
+    .option {
+      font-size: 0.85rem;
+    }
   }
 `;
 
