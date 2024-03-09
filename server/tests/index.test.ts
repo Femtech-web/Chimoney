@@ -37,7 +37,7 @@ describe("Status and Response", () => {
     this.timeout(20000);
 
     it("stores a user's detail in the database and create's a wallet", function (done) {
-      const body_params = { name: "Akolade Oluwafemi", email: "brandaka@gmail.com" };
+      const body_params = { name: "Akolade Oluwafemi", email: "biancas@gmail.com" };
 
       baseRequest.post('/createWallet', { form: body_params },
         function (error: Error, response: any, body: any) {
@@ -51,7 +51,7 @@ describe("Status and Response", () => {
     })
 
     it("logs in a user with there credentials", function (done) {
-      const userEmail = { email: "brandaka@gmail.com" };
+      const userEmail = { email: "biancas@gmail.com" };
 
       baseRequest.post('/login', { form: userEmail },
         function (error: Error, response: any, body: any) {
