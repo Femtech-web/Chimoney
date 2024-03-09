@@ -2,17 +2,19 @@ import { Response, Request, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
 import AppError from "./helpers/appError";
 import { emailValidator } from "./utils/email.validator";
-import { formatSubAccount } from "./utils/format.subAccount";
+import { formatSubAccount, formatWallet } from "./utils/format.subAccount";
 import { formatTransaction } from "./utils/format.transaction";
 import {
   SubAcctRequestBody,
   PayoutWalletReqBody,
   PayoutChimoneyReqBody,
   GetTransactionReqBody,
-} from "./typings/types";
+  ChimoneyReceivers,
+} from "../typings/types";
 import {
   CREATE_SUBACCOUNT_API,
   GET_SUBACCOUNT_API,
+  GET_WALLET_API,
   PAYOUT_CHIMONEY_API,
   PAYOUT_WALLET_API,
   GET_SINGLE_TRANSACTION_API,
@@ -45,11 +47,15 @@ class Controller {
 
       const { data, status } = await CREATE_SUBACCOUNT_API(user_data);
       if (data && status === "success") {
-        const created_account = formatSubAccount(data, "initial");
+        const created_account = formatSubAccount(data);
 
-        const response = await GET_SUBACCOUNT_API(created_account.account_id);
-        if (response.data && response.status === "success") {
-          const user_account = formatSubAccount(response.data, "wallet");
+        const response = await GET_WALLET_API(created_account.account_id);
+        if (response && response.status === "success") {
+          const user_wallet = formatWallet(response.data);
+          const user_account = { ...created_account, user_wallet };
+          console.log("USER=================start");
+          console.log(user_account);
+          console.log("USER=================end");
           const newUser = await prisma.user.create({
             data: {
               fullName: user_data.name,
@@ -67,9 +73,16 @@ class Controller {
         }
       }
     } catch (err: any) {
-      const serverError = err.response.data.error;
-      if (serverError === "already exists") {
-        return next(new AppError("Account already exists", 500));
+      if (err.response.data) {
+        const serverError = err.response.data.error;
+        console.log(
+          "SERVER_START-----------------" +
+            serverError +
+            "--------------------------SERVER_END",
+        );
+        if (serverError === "already exists") {
+          return next(new AppError("Account already exists", 500));
+        }
       }
 
       next(err);
@@ -100,9 +113,18 @@ class Controller {
         );
       }
 
-      const response = await GET_SUBACCOUNT_API(user.subaccountID);
-      if (response.data && response.status === "success") {
-        const user_account = formatSubAccount(response.data, "wallet");
+      const [accountRes, walletRes] = await Promise.all([
+        GET_SUBACCOUNT_API(user.subaccountID),
+        GET_WALLET_API(user.subaccountID),
+      ]);
+
+      if (accountRes.data && accountRes.status === "success") {
+        const fetched_account = formatSubAccount(accountRes.data);
+        let user_account;
+        if (walletRes && walletRes.status === "success") {
+          const user_wallet = formatWallet(walletRes.data);
+          user_account = { ...fetched_account, user_wallet };
+        }
 
         return res.status(200).json({
           success: true,
@@ -123,9 +145,18 @@ class Controller {
         return next(new AppError(`No request query provided`, 400));
       }
 
-      const { data, status } = await GET_SUBACCOUNT_API(account_id);
-      if (data && status === "success") {
-        const user_account = formatSubAccount(data, "wallet");
+      const [accountRes, walletRes] = await Promise.all([
+        GET_SUBACCOUNT_API(account_id),
+        GET_WALLET_API(account_id),
+      ]);
+
+      if (accountRes.data && accountRes.status === "success") {
+        const fetched_account = formatSubAccount(accountRes.data);
+        let user_account;
+        if (walletRes && walletRes.status === "success") {
+          const user_wallet = formatWallet(walletRes.data);
+          user_account = { ...fetched_account, user_wallet };
+        }
 
         return res.status(200).json({
           success: true,
@@ -176,11 +207,13 @@ class Controller {
         return next(new AppError(`No receivers provided`, 400));
       }
 
-      const allEmails = body_params.chimoneys.map((receiver) => {
-        if ("email" in receiver) {
-          return receiver.email;
-        }
-      });
+      const allEmails = body_params.chimoneys.map(
+        (receiver: ChimoneyReceivers) => {
+          if ("email" in receiver) {
+            return receiver.email;
+          }
+        },
+      );
 
       allEmails.forEach((email) => {
         const isValidEmail = emailValidator(email);

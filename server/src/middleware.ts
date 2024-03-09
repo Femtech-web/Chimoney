@@ -1,5 +1,5 @@
 import { Response, NextFunction } from "express";
-import { CustomRequest } from "./typings/types";
+import { CustomRequest } from "../typings/types";
 
 export default function ValidateUser(
   req: CustomRequest,
@@ -11,7 +11,7 @@ export default function ValidateUser(
   if (!userId)
     return res.status(404).json({
       successful: false,
-      message: "Unauthorised Access",
+      message: "Unauthorized Access",
     });
 
   req.userId = userId;

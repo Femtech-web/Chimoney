@@ -1,6 +1,6 @@
-import { SubAcctResponseBody } from "../typings/types";
+import { SubAcctResponseBody } from "../../typings/types";
 
-export function formatSubAccount(accountDetails: any, type: string) {
+export function formatSubAccount(accountDetails: any) {
   let formatted_data: SubAcctResponseBody;
 
   formatted_data = {
@@ -10,16 +10,12 @@ export function formatSubAccount(accountDetails: any, type: string) {
     createdDate: accountDetails.createdDate,
     user_name: accountDetails.name,
     user_email: accountDetails.email,
-    isSubAccount: accountDetails.subAccount
-  }
-
-  if (type === "wallet") {
-    formatted_data = {
-      ...formatted_data,
-      user_wallet: accountDetails.wallets.find((wallet: any) => wallet.type === "chi")
-    }
-  }
+    isSubAccount: accountDetails.subAccount,
+  };
 
   return formatted_data;
 }
 
+export function formatWallet(wallets: any) {
+  return wallets.find((wallet: any) => wallet.type === "chi");
+}

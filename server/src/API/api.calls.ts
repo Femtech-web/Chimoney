@@ -4,7 +4,7 @@ import {
   PayoutChimoneyReqBody,
   PayoutWalletReqBody,
   GetTransactionReqBody,
-} from "../typings/types";
+} from "../../typings/types";
 
 export const CREATE_SUBACCOUNT_API = async (payload: SubAcctRequestBody) => {
   try {
@@ -21,6 +21,20 @@ export const CREATE_SUBACCOUNT_API = async (payload: SubAcctRequestBody) => {
 export const GET_SUBACCOUNT_API = async (account_id: string) => {
   try {
     const res = await CHIPAY_API.get(`/sub-account/get?id=${account_id}`);
+
+    if (res) {
+      return res.data;
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const GET_WALLET_API = async (account_id: string) => {
+  try {
+    const res = await CHIPAY_API.post("/wallets/list", {
+      subAccount: account_id,
+    });
 
     if (res) {
       return res.data;
